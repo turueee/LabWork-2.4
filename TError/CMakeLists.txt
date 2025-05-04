@@ -1,9 +1,10 @@
-file(GLOB hdrs "*.h*") #Добавляем в переменную hdrs все файлы с расширением .h
-file(GLOB srcs "*.cpp")#Добавляем в переменную srcs все файлы с расширением .h
 
+file(GLOB hdrs "*.h*")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../TString")
+file(GLOB srcs "*.cpp")
 
-add_library(${errorlib} STATIC ${srcs}  ${hdrs})
+add_library(${errorlib} STATIC ${srcs} ${hdrs})
+
+target_link_libraries(${errorlib} ${stringlib})
 
 

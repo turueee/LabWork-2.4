@@ -63,7 +63,7 @@ template<class T>
 inline TVector<T>::TVector(int len_)
 {
   if (len_ < 0)
-    THROW_ERROR("len_ < 0",len_);
+    throw TError("len_ < 0", __func__, __FILE__, __LINE__);
   else if (len = 0)
     vector = nullptr;
   else
@@ -124,7 +124,7 @@ template<class T>
 inline void TVector<T>::SetLen(int len_)
 {
   if (len_ < 0)
-    THROW_ERROR("len_ < 0", len_);
+    throw TError("len_ < 0", __func__, __FILE__, __LINE__);
   else if (len == len_)
     return;
   else if (len_ == 0)
@@ -166,7 +166,9 @@ inline void TVector<T>::SetLen(int len_)
 template<class T>
 inline void TVector<T>::SetVector(T* array, int len_)
 {
-  if (len == 0)
+  if (len_ < 0)
+    TError("len_ < 0", __func__, __FILE__, __LINE__)
+  else if (len_ == 0)
     return;
   else
   {
@@ -179,7 +181,7 @@ template<class T>
 inline TVector<T> TVector<T>::operator+(const TVector<T>& line)
 {
   if (len != line.len)
-    throw("len!=line.len");
+    TError("len != line.len", __func__, __FILE__, __LINE__);
   else if (len == nullptr)
   {
     return TVector();
@@ -197,7 +199,7 @@ template<class T>
 inline TVector<T> TVector<T>::operator-(const TVector<T>& line)
 {
   if (len != line.len)
-    throw("len!=line.len");
+    TError("len != line.len", __func__, __FILE__, __LINE__);
   else if (len == nullptr)
   {
     return TVector();
@@ -215,7 +217,7 @@ template<class T>
 inline T TVector<T>::operator*(const TVector<T>& line)
 {
   if (len != line.len)
-    throw("len!=line.len");
+    TError("len != line.len", __func__, __FILE__, __LINE__);
   else if (len == nullptr)
   {
     return TVector();
@@ -319,9 +321,9 @@ template<class T>
 inline T& TVector<T>::operator[](int index) const
 {
   if (vector == nullptr)
-    throw("vector==nullptr");
+    TError("vector==nullptr", __func__, __FILE__, __LINE__);
   else if (index >= len)
-    throw("index>=len");
+    TError("index >= len", __func__, __FILE__, __LINE__);
   else
     return vector[index];
 }

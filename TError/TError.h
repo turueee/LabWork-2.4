@@ -8,7 +8,7 @@
 class TError
 {
 protected:
-  TString message;  // Используем std::string для хранения сообщения
+  TString message;
 
 public:
   TError(char* error,
@@ -18,7 +18,7 @@ public:
   {
     TString er(error), func(function), fi(file),prob(" ");
     message = er + prob + func +prob + fi;
-    cout << "Error: " << er << "\nFunction: " << func << "\nFile: " << fi << endl;
+    cout << "\nError: " << er << "Function: " << func << "File: " << fi <<"Line:"<<line<< endl;
   }
 };
 
