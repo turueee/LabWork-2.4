@@ -5,4 +5,3 @@ add_library(${vectorlib} STATIC ${srcs} ${hdrs})
 
 
 target_link_libraries(${vectorlib} ${errorlib})
-target_link_libraries(${vectorlib} ${stringlib})

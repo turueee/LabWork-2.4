@@ -1,208 +1,480 @@
-#include "TString.h"
+#include "TMatrix.h"
 
 #include <gtest.h>
 
 
-///Тесты для класса TAllInstruments
-TEST(TString, can_create_String_with_positive_len)
+TEST(TMatrix, can_create_matrix_with_nonegative_parametrs)
 {
-  ASSERT_NO_THROW(TString s("abdsfd",3));
+  ASSERT_NO_THROW(TMatrix <double> table(3, 3));
 }
 
 
-TEST(TString, throw_create_string_with_negative_len)
+TEST(TMatrix, throw_create_matrix_with_negative_strings)
 {
-  ASSERT_ANY_THROW(TString s("dddfjf",-5));
+  ASSERT_ANY_THROW(TMatrix<double> table(-3,2));
 }
 
 
-TEST(TString, throw_copy_string_by_nullptr)
+TEST(TMatrix, throw_create_matrix_with_negative_columns)
 {
-  char* d = nullptr;
-  ASSERT_ANY_THROW(TString s(d));
+  ASSERT_ANY_THROW(TMatrix<double> table(3, -2));
 }
 
 
-TEST(TString, can_copy)
+TEST(TMatrix, can_copy)
 {
-  TString s("dfg",3);
-  TString sc(s);
-  EXPECT_NEAR(1, s==sc, 0.000001);
+  TMatrix<double> table(2, 3);
+  TMatrix<double> tablec(table);
+  EXPECT_NEAR(1, table==tablec, 0.000001);
 }
 
 
-TEST(TString, can_get_string)
+TEST(TMatrix, can_get_n)
 {
-  TString z("abdsfd", 3);
-  char* stl;
-  ASSERT_NO_THROW(z.GetStr(&stl));
+  TMatrix<int> a(2, 3);
+  EXPECT_NEAR(2,a.GetN(), 0.000001);
 }
 
 
-TEST(TString, can_get_len)
+TEST(TMatrix, can_get_m)
 {
-  TString s("dfg", 3);
-  EXPECT_NEAR(3, s.GetLen(), 0.000001);
+  TMatrix<int> a(2, 3);
+  EXPECT_NEAR(3, a.GetM(), 0.000001);
 }
 
 
-TEST(TString, can_set_str)
+TEST(TMatrix, can_set_n)
 {
-  TString s("dfg", 3);
-  TString z;
-  z.SetStr("dfg");
-  EXPECT_NEAR(1, s==z, 0.000001);
+  TMatrix<int> s(2,3);
+  s.SetN(4);
+  EXPECT_NEAR(4, s.GetN(), 0.000001);
 }
 
 
-TEST(TString, throw_set_str)
+TEST(TMatrix, throw_set_n)
 {
-  TString s("dfg", 3);
-  ASSERT_ANY_THROW(s.SetStr(nullptr));
+  TMatrix<int> s(2,3);
+  ASSERT_ANY_THROW(s.SetN(-2));
 }
 
 
-TEST(TString, can_set_len)
+TEST(TMatrix, can_set_m)
 {
-  TString s("dfg", 3);
-  s.SetLen(2);
-  EXPECT_NEAR(2, s.GetLen(), 0.000001);
+  TMatrix<int> s(2, 3);
+  s.SetM(4);
+  EXPECT_NEAR(4, s.GetM(), 0.000001);
 }
 
 
-TEST(TString, throw_set_len)
+TEST(TMatrix, throw_set_m)
 {
-  TString s("dfg", 3);
-  ASSERT_ANY_THROW(s.SetLen(-5));
+  TMatrix<int> s(2, 3);
+  ASSERT_ANY_THROW(s.SetM(-2));
 }
 
 
-TEST(TString, can_add)
+TEST(TMatrix, can_add)
 {
-  TString s("dfg", 3),u("uio",3),add("dfguio",6);
+  TMatrix<int> s(2,2),u(2,2),add(2,2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+
+  add[0][0] = 6;
+  add[0] [1] = 8;
+  add[1][0] = 10;
+  add[1][1] = 6;
   EXPECT_NEAR(1,s+u==add, 0.000001);
 }
 
 
-TEST(TString, can_mul)
+TEST(TMatrix, throw_add_first_matrix_is_nullptr)
 {
-  TString s("dfg"), mul ("dfgdfgdfg");
-  EXPECT_NEAR(1, s * 3 == mul, 0.000001);
+  TMatrix<int> s, u(2,2);
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+  ASSERT_ANY_THROW(u+s);
 }
 
 
-TEST(TString, throw_mul)
+TEST(TMatrix, throw_add_second_matrix_is_nullptr)
 {
-  TString s("dfg");
-  ASSERT_ANY_THROW(s*-3);
+  TMatrix<int> s, u(2, 2);
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+  ASSERT_ANY_THROW(s+u);
 }
 
 
-TEST(TString, can_equality)
+TEST(TMatrix, throw_add_size_error)
 {
-  TString s("dfg"), mul;
-  mul = s;
-  EXPECT_NEAR(1, s == mul, 0.000001);
+  TMatrix<int> s(2,3), u(2, 2);
+  ASSERT_ANY_THROW(s + u);
 }
 
 
-TEST(TString, can_equal)
+TEST(TMatrix, can_sub)
 {
-  TString s("dfg"), mul("dfg");
-  EXPECT_NEAR(1, s == mul, 0.000001);
+  TMatrix<int> s(2, 2), u(2, 2), add(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+
+  add[0][0] = -4;
+  add[0][1] = -4;
+  add[1][0] = -4;
+  add[1][1] = -4;
+  EXPECT_NEAR(1, s - u == add, 0.000001);
 }
 
 
-TEST(TString, can_non_equal)
+TEST(TMatrix, throw_sub_first_matrix_is_nullptr)
 {
-  TString s("dfg"), mul("fg");
-  EXPECT_NEAR(1, s != mul, 0.000001);
+  TMatrix<int> s, u(2, 2);
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+  ASSERT_ANY_THROW(u - s);
 }
 
 
-TEST(TString, can_more)
+TEST(TMatrix, throw_sub_second_matrix_is_nullptr)
 {
-  TString s("dfg"), mul("fg");
-  EXPECT_NEAR(1, s > mul, 0.000001);
+  TMatrix<int> s, u(2, 2);
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+  ASSERT_ANY_THROW(s - u);
 }
 
 
-TEST(TString, can_few)
+TEST(TMatrix, throw_sub_size_error)
 {
-  TString s("df"), mul("dfg");
-  EXPECT_NEAR(1, s < mul, 0.000001);
+  TMatrix<int> s(2, 3), u(2, 2);
+  ASSERT_ANY_THROW(s - u);
 }
 
 
-TEST(TString, can_index)
+TEST(TMatrix, can_mul_by_matrix)
 {
-  TString s("df");
-  EXPECT_NEAR(1, s[1]=="f", 0.000001);
+  TMatrix<int> s(2, 2), u(2, 2), add(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+
+  add[0][0] = 19;
+  add[0][1] = 16;
+  add[1][0] = 22;
+  add[1][1] = 23;
+  EXPECT_NEAR(1, s * u == add, 0.000001);
 }
 
 
-TEST(TString, throw_index)
+TEST(TMatrix, throw_mul_by_matrix_first_matrix_is_nullptr)
 {
-  TString s("df");
-  ASSERT_ANY_THROW(s[4]);
+  TMatrix<int> s, u(2, 2);
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+  ASSERT_ANY_THROW(u * s);
 }
 
 
-TEST(TString, can_search_word)
+TEST(TMatrix, throw_mul_by_matrix_second_matrix_is_nullptr)
 {
-  TString s("dfabaddkdaba");
-  EXPECT_NEAR(2, s.WordSearch("aba"), 0.000001);
+  TMatrix<int> s, u(2, 2);
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+  ASSERT_ANY_THROW(s * u);
 }
 
 
-TEST(TString, can_search_letter)
+TEST(TMatrix, throw_mul_by_matrix_size_error)
 {
-  TString s("dfabaddkdaba");
-  EXPECT_NEAR(2, s.LetterSearch('a'), 0.000001);
+  TMatrix<int> s(2, 3), u(2, 2);
+  ASSERT_ANY_THROW(s * u);
 }
 
 
-TEST(TString, can_split)
+TEST(TMatrix, can_mul_by_num)
 {
-  TString s("dfabaddkdaba"),c("df"),ab("aba");
-  char** sp;
-  int l;
-  s.Split(ab, &sp, &l);
-  TString res(sp[0]);
-  EXPECT_NEAR(1, res==c, 0.000001);
+  TMatrix<int> s(2, 2),add(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  add[0][0] = 3;
+  add[0][1] = 6;
+  add[1][0] = 9;
+  add[1][1] = 3;
+  EXPECT_NEAR(1, s * 3 == add, 0.000001);
 }
 
 
-TEST(TString, can_search_all_word)
+TEST(TMatrix, throw_mul_by_num_matrix_is_nullptr)
 {
-  TString s("dfabaddkdaba");
-  int* ind;
-  s.AllIndexWordSearch("aba", &ind);
-  EXPECT_NEAR(9, ind[1], 0.000001);
+  TMatrix<int> u;
+  ASSERT_ANY_THROW(u * 2);
 }
 
 
-TEST(TString, can_search_more_popular_letter)
+TEST(TMatrix, can_devide_by_num)
 {
-  TString s("aaadfabaddkdaba");
-  EXPECT_NEAR(1,'a' == s.MostPopularLetter(), 0.000001);
+  TMatrix<int> s(2, 2), add(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  add[0][0] = 3;
+  add[0][1] = 6;
+  add[1][0] = 9;
+  add[1][1] = 3;
+  EXPECT_NEAR(1, add / 3 == s, 0.000001);
 }
 
 
-TEST(TString, can_set_unic)
+TEST(TMatrix, throw_devide_by_num_matrix_is_nullptr)
 {
-  TString s("abcab");
-  char* unic;
-  s.SetOfLetters(&unic);
-  TString d(unic), res("abc");
-  EXPECT_NEAR(1, d==res, 0.000001);
+  TMatrix<int> u;
+  ASSERT_ANY_THROW(u / 2);
 }
 
 
-TEST(TString, can_set_counts)
+TEST(TMatrix, throw_devide_by_zero)
 {
-  TString s("abcab");
-  int* unic;
-  s.CountsOfLetters(&unic);
-  EXPECT_NEAR(2, unic[0], 0.000001);
+  TMatrix<int> u(2,2);
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 7;
+  u[1][1] = 5;
+  ASSERT_ANY_THROW(u / 0);
 }
+
+
+TEST(TMatrix, can_equip_by_num)
+{
+  TMatrix<int> s(2, 2), add(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  add[0][0] = 1;
+  add[0][1] = 2;
+  add[1][0] = 3;
+  add[1][1] = 1;
+  EXPECT_NEAR(1, add == s, 0.000001);
+}
+
+
+TEST(TMatrix, throw_equip_first_nullptr)
+{
+  TMatrix<int> s, add(2, 2);
+
+  add[0][0] = 1;
+  add[0][1] = 2;
+  add[1][0] = 3;
+  add[1][1] = 1;
+  ASSERT_ANY_THROW(s==add);
+}
+
+
+TEST(TMatrix, throw_equip_second_nullptr)
+{
+  TMatrix<int> s, add(2, 2);
+
+  add[0][0] = 1;
+  add[0][1] = 2;
+  add[1][0] = 3;
+  add[1][1] = 1;
+  ASSERT_ANY_THROW(add == s);
+}
+
+
+TEST(TMatrix, can_equipment)
+{
+  TMatrix<int> s(2, 2), add;
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+  add = s;
+  EXPECT_NEAR(1, add == s, 0.000001);
+}
+
+
+TEST(TMatrix, can_get_by_index)
+{
+  TMatrix<int> s(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+  EXPECT_NEAR(2, s[0][1], 0.000001);
+}
+
+
+TEST(TMatrix, throw_get_index_by_nullptr)
+{
+  TMatrix<int> s;
+  ASSERT_ANY_THROW(s[0]);
+}
+
+
+TEST(TMatrix, throw_get_index_more_than_in_matrix)
+{
+  TMatrix<int> s(2,2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+  ASSERT_ANY_THROW(s[3]);
+}
+
+
+TEST(TMatrix, can_transposition)
+{
+  TMatrix<int> s(2, 2),u(2,2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  u[0][0] = 1;
+  u[0][1] = 3;
+  u[1][0] = 2;
+  u[1][1] = 1;
+  EXPECT_NEAR(1, s.Transposition()==u, 0.000001);
+}
+
+
+TEST(TMatrix, throw_transposition_by_nullptr)
+{
+  TMatrix<int> s;
+  ASSERT_ANY_THROW(s.Transposition());
+}
+
+
+TEST(TMatrix, can_get_minor)
+{
+  TMatrix<int> s(2, 2), u(1, 1);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  u[0][0] = 1;
+  EXPECT_NEAR(1, s.Minor(1,1) == u, 0.000001);
+}
+
+
+TEST(TMatrix, throw_minor_by_nullptr)
+{
+  TMatrix<int> s;
+  ASSERT_ANY_THROW(s.Minor(0,0));
+}
+
+
+TEST(TMatrix, throw_minor_by_nonquadro)
+{
+  TMatrix<int> s(2,5);
+  ASSERT_ANY_THROW(s.Minor(0, 0));
+}
+
+
+TEST(TMatrix, can_get_attached)
+{
+  TMatrix<int> s(2, 2), u(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 4;
+
+  u[0][0] = 4;
+  u[0][1] = -3;
+  u[1][0] = -2;
+  u[1][1] = 1;
+  EXPECT_NEAR(1, s.Attached() == u, 0.000001);
+}
+
+
+TEST(TMatrix, throw_attached_by_nullptr)
+{
+  TMatrix<int> s;
+  ASSERT_ANY_THROW(s.Attached());
+}
+
+
+TEST(TMatrix, throw_attached_by_nonquadro)
+{
+  TMatrix<int> s(2, 5);
+  ASSERT_ANY_THROW(s.Attached());
+}
+
+
+TEST(TMatrix, can_get_inverse)
+{
+  TMatrix<double> s(2, 2), u(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 4;
+
+  u[0][0] = -2;
+  u[0][1] = 1;
+  u[1][0] = 1.5;
+  u[1][1] = -0.5;
+  EXPECT_NEAR(1, s.Inverse() == u, 0.000001);
+}
+
+
+TEST(TMatrix, throw_inverse_by_nullptr)
+{
+  TMatrix<int> s;
+  ASSERT_ANY_THROW(s.Inverse());
+}
+
+
+TEST(TMatrix, throw_inverse_by_nonquadro)
+{
+  TMatrix<int> s(2, 5);
+  ASSERT_ANY_THROW(s.Inverse());
+}
+
+
+TEST(TMatrix, throw_inverse_zero)
+{
+  TMatrix<int> s(2, 2);
+  ASSERT_ANY_THROW(s.Inverse());
+}
+
+

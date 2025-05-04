@@ -4,10 +4,10 @@
 int main()
 {
   system("chcp 1251> nul");
-  double* z = new double[3] {1, 2, 45};
-  TVector<double> g, f;
+  TMatrix<double> g, f(2,3);
+  TVector<double> d,h;
+  cin >> d;
   cin >> g;
-  cout << g;
-  g.SetLen(-6);
-  cout << g;
+  h = g.Gauss(d);
+  cout << h;
 }

@@ -167,7 +167,7 @@ template<class T>
 inline void TVector<T>::SetVector(T* array, int len_)
 {
   if (len_ < 0)
-    TError("len_ < 0", __func__, __FILE__, __LINE__)
+    throw TError("len_ < 0", __func__, __FILE__, __LINE__)
   else if (len_ == 0)
     return;
   else
@@ -181,7 +181,7 @@ template<class T>
 inline TVector<T> TVector<T>::operator+(const TVector<T>& line)
 {
   if (len != line.len)
-    TError("len != line.len", __func__, __FILE__, __LINE__);
+    throw TError("len != line.len", __func__, __FILE__, __LINE__);
   else if (len == nullptr)
   {
     return TVector();
@@ -199,7 +199,7 @@ template<class T>
 inline TVector<T> TVector<T>::operator-(const TVector<T>& line)
 {
   if (len != line.len)
-    TError("len != line.len", __func__, __FILE__, __LINE__);
+    throw TError("len != line.len", __func__, __FILE__, __LINE__);
   else if (len == nullptr)
   {
     return TVector();
@@ -217,7 +217,7 @@ template<class T>
 inline T TVector<T>::operator*(const TVector<T>& line)
 {
   if (len != line.len)
-    TError("len != line.len", __func__, __FILE__, __LINE__);
+    throw TError("len != line.len", __func__, __FILE__, __LINE__);
   else if (len == nullptr)
   {
     return TVector();
@@ -321,9 +321,9 @@ template<class T>
 inline T& TVector<T>::operator[](int index) const
 {
   if (vector == nullptr)
-    TError("vector==nullptr", __func__, __FILE__, __LINE__);
+    throw TError("vector==nullptr", __func__, __FILE__, __LINE__);
   else if (index >= len)
-    TError("index >= len", __func__, __FILE__, __LINE__);
+    throw TError("index >= len", __func__, __FILE__, __LINE__);
   else
     return vector[index];
 }
@@ -335,7 +335,7 @@ inline TVector<T> TVector<T>::BublleSort()
   TVector<T> res(*this);
   for (int i = 0; i < len; ++i)
   {
-    for (j = 0; j < (len - 1); ++j)
+    for (int j = 0; j < (len - 1); ++j)
     {
       if (res[j] > res[j + 1])
       {
@@ -463,17 +463,19 @@ inline ostream& operator<<(ostream& o, TVector<O>& t)
 template<class I>
 inline istream& operator>>(istream& i, TVector<I>& t)
 {
-  int l;
+  int len_;
   cout << "Enter the len of vector: ";
-  i >> l;
-  if (l == 0)
+  i >> len_;
+  if (len_<0)
+    throw TError("len_ < 0", __func__, __FILE__, __LINE__);
+  if (len_ == 0)
   {
-    t.SetLen(l);
+    t.SetLen(len_);
     return i;
   }
   else
   {
-    t.SetLen(l);
+    t.SetLen(len_);
     for (int k = 0; k < t.len; ++k)
     {
       cout << "vector[" << k << "] = ";

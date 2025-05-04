@@ -8,7 +8,8 @@ set(application StringApplication) #Переменная с именем при�
 
 set(errorlib TErrorLibrary)
 set(matrixlib TMatrixLibrary)
-set(vectorlib TVectorLibrary)   
+set(vectorlib TVectorLibrary)
+set(stringlib TStringLibrary)   
 
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
@@ -20,11 +21,13 @@ endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/TError)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/TMatrix)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/TVector)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/TString)
 
 
 add_subdirectory(Main)
 add_subdirectory(TError)
 add_subdirectory(TMatrix)
 add_subdirectory(TVector)
-#add_subdirectory(test)
-#add_subdirectory(gtest)
+add_subdirectory(TString)
+add_subdirectory(test)
+add_subdirectory(gtest)

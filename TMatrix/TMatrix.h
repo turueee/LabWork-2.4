@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include "TError.h"
+#include "TVector.h"
 
 using namespace std;
 
@@ -25,9 +27,10 @@ public:
   void SetM(int m_);
   void SetMatrix(T**array);
 
-  /// 1 level
   
   /// 2 level
+  TVector<T> operator*(const TVector<T>& table);
+  TVector<T> Gauss(TVector<T>& table);
  
   /// 3 level
   TMatrix<T> Transposition();
@@ -35,7 +38,6 @@ public:
   TMatrix<T> Attached();
   TMatrix<T> Inverse();
   T Determinant();
-  TMatrix<T> Gauss();
   int CountOfIncludes(T num);
   TMatrix<T> IndexesOfIncludes(T num);
   TMatrix<T> Pow(int st);
@@ -45,7 +47,7 @@ public:
   TMatrix operator*(const TMatrix<T>& table);
   TMatrix operator*(T num);
   TMatrix operator/(T num);
-  TMatrix operator=(const TMatrix<T>& table);
+  void operator=(const TMatrix<T>& table);
   bool operator==(const TMatrix<T>& table);
   T*& operator[](int index);
 
@@ -69,12 +71,10 @@ template<class T>
 inline TMatrix<T>::TMatrix(int n_, int m_)
 {
   if (n_ < 0)
-    throw 'n<0';
-  if (m_ < 0)
-    throw "m<0";
-  n = n_;
-  m = m_;
-  if (n == 0 || m == 0)
+    throw TError("n_ < 0", __func__, __FILE__, __LINE__);
+  else if (m_ < 0)
+    throw TError("m_ < 0", __func__, __FILE__, __LINE__);
+  else if (n_ == 0 || m_ == 0)
   {
     matrix = nullptr;
     n = 0;
@@ -82,19 +82,11 @@ inline TMatrix<T>::TMatrix(int n_, int m_)
   }
   else
   {
+    n = n_;
+    m = m_;
     matrix = new T * [n];
     for (int i = 0; i < n; ++i)
-      matrix[i] = new T[m];
-    for (int i = 0; i < n; ++i)
-    {
-      for (int j = 0; j < m; ++j)
-      {
-        if (i == j)
-          matrix[i][j] = 1;
-        else
-          matrix[i][j] = 0;
-      }
-    }
+      matrix[i] = new T[m]{0};
   }
 }
 
@@ -188,7 +180,7 @@ template<class T>
 inline void TMatrix<T>::SetN(int n_)
 {
   if (n_ < 0)
-    throw "n_<0";
+    throw TError("n_ < 0", __func__, __FILE__, __LINE__);
   else if (n_ == 0)
   {
     n = 0;
@@ -247,12 +239,22 @@ inline void TMatrix<T>::SetM(int m_)
   if (m == m_)
     return;
   else if (m_ < 0)
-    throw"m_<0";
+    throw TError("m_ < 0", __func__, __FILE__, __LINE__);
   else if (m_ == 0)
   {
     n = 0;
     m = 0;
     matrix = nullptr;
+  }
+  else if (matrix == nullptr)
+  {
+    m = m_;
+    n = 1;
+    matrix = new T*[n];
+    for (int i = 0; i < n; ++i)
+    {
+      matrix[i] = new T[m]{0};
+    }
   }
   else
   {
@@ -316,7 +318,7 @@ inline void TMatrix<T>::SetMatrix(T** array)
     }
     catch (...)
     {
-      throw "size error";
+      throw TError("size error", __func__, __FILE__, __LINE__);
     }
     for (int i = 0; i < n; ++i)
     {
@@ -330,10 +332,31 @@ inline void TMatrix<T>::SetMatrix(T** array)
 
 
 template<class T>
+inline TVector<T> TMatrix<T>::operator*(const TVector<T>& line)
+{
+  TVector<T>c(line);
+  int l = c.GetLen();
+  if (m != l)
+    throw TError("m != line.len", __func__, __FILE__, __LINE__);
+  else if (n == 0 || l == 0)
+    throw TError("matrix == nullptr || line.vector==nullptr", __func__, __FILE__, __LINE__);
+  else
+  {
+    TVector<T> res(n);
+    for (int i = 0; i < n; ++i)
+    {
+      for (int j = 0; j < m; ++j)
+        res[i] += matrix[i][j]*line[j];
+    }
+    return TVector<T>(res);
+  }
+}
+
+template<class T>
 inline TMatrix<T> TMatrix<T>::Transposition()
 {
   if (matrix == nullptr)
-    throw "matrix == nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   TMatrix<T> table(m,n);
   for (int j = 0; j < m; ++j)
   {
@@ -342,7 +365,7 @@ inline TMatrix<T> TMatrix<T>::Transposition()
       table.matrix[j][i] = matrix[i][j];
     }
   }
-  return table;
+  return TMatrix<T>(table);
 }
 
 
@@ -350,9 +373,9 @@ template<class T>
 inline TMatrix<T> TMatrix<T>::Minor(int string, int column)
 {
   if (n != m)
-    throw"n!=m";
+    throw TError("n!=m", __func__, __FILE__, __LINE__);
   if (matrix == nullptr)
-    throw"matrix==nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   TMatrix<T> cp(n - 1, m - 1);
   int newi = 0;
   for (int i = 0; i < n; ++i)
@@ -371,7 +394,7 @@ inline TMatrix<T> TMatrix<T>::Minor(int string, int column)
       newi++;
     }
   }
-  return cp;
+  return TMatrix<T>(cp);
 }
 
 
@@ -379,9 +402,9 @@ template<class T>
 inline TMatrix<T> TMatrix<T>::Attached()
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   if (n != m || n==1)
-    throw"n!=m";
+    throw TError("n != m || n == 1", __func__, __FILE__, __LINE__);
   else
   {
     TMatrix<T> cp(n, m);
@@ -390,10 +413,10 @@ inline TMatrix<T> TMatrix<T>::Attached()
       for (int j = 0; j < m; ++j)
       {
         TMatrix<T> d = this->Minor(i, j);
-        cp.matrix[i][j] = d.Determinant() * pow(-1, i + j);
+        cp.matrix[j][i] = d.Determinant() * pow(-1, i + j);
       }
     }
-    return cp;
+    return TMatrix <T> (cp);
   }
 }
 
@@ -402,11 +425,11 @@ template<class T>
 inline TMatrix<T> TMatrix<T>::Inverse()
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   if (n != m)
-    throw"n!=m";
+    throw TError("n != m", __func__, __FILE__, __LINE__);
   else if (this->Determinant() == 0)
-    throw"det = 0";
+    throw TError("Determinant == 0", __func__, __FILE__, __LINE__);
   else if (n == 1)
   {
     TMatrix<T> cp;
@@ -416,18 +439,21 @@ inline TMatrix<T> TMatrix<T>::Inverse()
   else if (n>=2)
   {
     TMatrix<T> cp = this->Attached();
-    return cp / this->Determinant();
+    return TMatrix<T>(cp.Transposition() / this->Determinant());
   }
 }
 
 template<class T>
-inline TMatrix<T> TMatrix<T>::Gauss()
+inline TVector<T> TMatrix<T>::Gauss(TVector<T>& table)
 {
-  if (n != m)
-    throw("n!=m");
+  if (n != m || n != table.GetLen())
+    throw TError("n != m", __func__, __FILE__, __LINE__);
+  else if (this->Determinant()==0)
+    throw TError("det == 0", __func__, __FILE__, __LINE__);
   else
   {
     TMatrix<T> t(*this);
+    TVector<T> res(table);
     for (int i = 0; i < n; ++i)
     {
       for (int j = 0; j < n; ++j)
@@ -435,15 +461,20 @@ inline TMatrix<T> TMatrix<T>::Gauss()
         if (i != j)
         {
           T mul = t.matrix[j][i];
+          res[j] = res[j] * t.matrix[i][i] - res[i] * mul;
           for (int k = 0; k < n; ++k)
           {
-            if (t.matrix[j][k]!=0)
+            if (t.matrix[j][k] != 0)
+            {
               t.matrix[j][k] = t.matrix[j][k] * t.matrix[i][i] - t.matrix[i][k] * mul;
+            }
           }
         }
       }
     }
-    return t;
+    for (int i = 0; i < n; ++i)
+      res[i] = res[i] / t.matrix[i][i];
+    return TVector<T>(res);
   }
 }
 
@@ -452,9 +483,9 @@ template<class T>
 inline T TMatrix<T>::Determinant()
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   if (n != m)
-    throw "n!=m";
+    throw TError("n != m", __func__, __FILE__, __LINE__);
   if (n == 1)
     return matrix[0][0];
   else if (n == 2)
@@ -486,7 +517,7 @@ template<class T>
 inline int TMatrix<T>::CountOfIncludes(T num)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   int count = 0;
   for (int i = 0; i < n; ++i)
   {
@@ -504,7 +535,7 @@ template<class T>
 inline TMatrix<T> TMatrix<T>::IndexesOfIncludes(T num)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   int count = 0;
   TMatrix<T> res(this->CountOfIncludes(num),2);
   for (int i = 0; i < n; ++i)
@@ -527,9 +558,9 @@ template<class T>
 inline TMatrix<T> TMatrix<T>::Pow(int st)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   else if (n != m)
-    throw "n!=m";
+    throw TError("n != m", __func__, __FILE__, __LINE__);
   else if (st == 0)
   {
     TMatrix<T> a(n, n);
@@ -555,14 +586,14 @@ inline TMatrix<T> TMatrix<T>::Pow(int st)
 
 
 template<class T>
-inline TMatrix<T> TMatrix<T>::operator+(const TMatrix& table)
+inline TMatrix<T> TMatrix<T>::operator+(const TMatrix<T>& table)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
-  if (table.matrix == nullptr)
-    throw "table.matrix==nullptr";
-  if (n != n or m != m)
-    throw "n!=n or m!=m";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
+  else if (table.matrix == nullptr)
+    throw TError("table.matrix == nullptr", __func__, __FILE__, __LINE__);
+  else if (n != table.n || m != table.m)
+    throw TError("n != table.n || m != table.m", __func__, __FILE__, __LINE__);
   else
   {
     TMatrix<T> cp(n, m);
@@ -571,20 +602,20 @@ inline TMatrix<T> TMatrix<T>::operator+(const TMatrix& table)
       for (int j = 0; j < m; ++j)
         cp.matrix[i][j] = matrix[i][j] + table.matrix[i][j];
     }
-    return cp;
+    return TMatrix<T>(cp);
   }  
 }
 
 
 template<class T>
-inline TMatrix<T> TMatrix<T>::operator-(const TMatrix& table)
+inline TMatrix<T> TMatrix<T>::operator-(const TMatrix<T>& table)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
-  if (table.matrix == nullptr)
-    throw "table.matrix==nullptr";
-  if (n != n or m != m)
-    throw "n!=n or m!=m";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
+  else if (table.matrix == nullptr)
+    throw TError("table.matrix == nullptr", __func__, __FILE__, __LINE__);
+  else if (n != table.n || m != table.m)
+    throw TError("n != table.n || m != table.m", __func__, __FILE__, __LINE__);
   else
   {
     TMatrix<T> cp(n, m);
@@ -593,32 +624,31 @@ inline TMatrix<T> TMatrix<T>::operator-(const TMatrix& table)
       for (int j = 0; j < m; ++j)
         cp.matrix[i][j] = matrix[i][j] - table.matrix[i][j];
     }
-    return cp;
+    return TMatrix<T>(cp);
   }
 }
-
 
 template<class T>
 inline TMatrix<T> TMatrix<T>::operator*(const TMatrix& table)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
-  if (table.matrix == nullptr)
-    throw "table.matrix==nullptr";
-  if (m != table.n)
-    throw "m!=table.n";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
+  else if (table.matrix == nullptr)
+    throw TError("table.matrix == nullptr", __func__, __FILE__, __LINE__);
+  else if (m!=table.n)
+    throw TError("m!=table.n", __func__, __FILE__, __LINE__);
   else
   {
-    TMatrix<T> cp(n, table.m);
-    for (int i = 0;i<cp.n;++i)
+    TMatrix<T> res(n,table.m);
+    for (int i = 0;i<res.n;++i)
     {
-      for (int j = 0; j < cp.m; ++j)
+      for (int j = 0; j < res.m; ++j)
       {
         for (int k = 0; k < m; ++k)
-          cp.matrix[i][j] += matrix[i][k] * table.matrix[k][j];
+          res.matrix[i][j] += matrix[i][k] * table.matrix[k][j];
       }
     }
-    return cp;
+    return TMatrix < T>(res);
   }
 }
 
@@ -627,14 +657,14 @@ template<class T>
 inline TMatrix<T> TMatrix<T>::operator*(T num)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
-  TMatrix<T> cp(n,m);
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
+  TMatrix<T> res(n,m);
   for (int i = 0; i < n; ++i)
   {
     for (int j = 0; j < m; ++j)
-      cp.matrix[i][j] = num * matrix[i][j];
+      res.matrix[i][j] = num * matrix[i][j];
   }
-  return cp;
+  return TMatrix<T>(res);
 }
 
 
@@ -642,53 +672,69 @@ template<class T>
 inline TMatrix<T> TMatrix<T>::operator/(T num)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
-  TMatrix<T> cp(n, m);
-  for (int i = 0; i < n; ++i)
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
+  if(num==(T)0)
+    throw TError("num==0", __func__, __FILE__, __LINE__);
+  else
   {
-    for (int j = 0; j < m; ++j)
-      cp.matrix[i][j] = matrix[i][j] / num;
+    TMatrix<T> res(n, m);
+    for (int i = 0; i < n; ++i)
+    {
+      for (int j = 0; j < m; ++j)
+        res.matrix[i][j] = matrix[i][j] / num;
+    }
+    return TMatrix<T>(res);
   }
-  return cp;
 }
 
 
 template<class T>
-inline TMatrix<T> TMatrix<T>::operator=(const TMatrix& table)
+inline void TMatrix<T>::operator=(const TMatrix<T>& table)
 {
-  if (table.matrix == nullptr)
-    throw "table.matrix==nullptr";
-  n = table.n;
-  m = table.m;
-  matrix = new T * [n];
-  for (int i = 0; i < n; ++i)
+  if (table.m == 0)
   {
-    matrix[i] = new T[m];
-    for (int j = 0; j < m; ++j)
-      matrix[i][j] = table.matrix[i][j];
+    matrix = nullptr;
+    n = 0;
+    m = 0;
   }
-  return *this;
+  else
+  {
+    n = table.n;
+    m = table.m;
+    matrix = new T * [n];
+    for (int i = 0; i < n; ++i)
+    {
+      matrix[i] = new T[m]{ 0 };
+      for (int j = 0; j < m; ++j)
+        matrix[i][j] = table.matrix[i][j];
+    }
+  }
 }
 
 
 template<class T>
 inline bool TMatrix<T>::operator==(const TMatrix& table)
 {
-  if (matrix == nullptr)
-    throw "matrix==nullptr";
-  if (table.matrix == nullptr)
-    throw "table.matrix==nullptr";
-  if (n != table.n || m != table.m)
+  if (matrix == nullptr && table.matrix == nullptr)
+    return true;
+  else if (matrix == nullptr)
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
+  else if (table.matrix == nullptr)
+    throw TError("table.matrix == nullptr", __func__, __FILE__, __LINE__);
+  else if (n != table.n || m != table.m)
     return false;
-  for (int i = 0; i < n; ++i)
+  else
   {
-    for (int j = 0; j < m;++j)
+    for (int i = 0; i < n; ++i)
     {
-      if (matrix[i][j] != table.matrix[i][j])
-        return false;
+      for (int j = 0; j < m; ++j)
+      {
+        if (matrix[i][j] != table.matrix[i][j])
+          return false;
+      }
     }
+    return true;
   }
-  return true;
 }
 
 
@@ -696,9 +742,9 @@ template<class T>
 inline T*& TMatrix<T>::operator[](int index)
 {
   if (matrix == nullptr)
-    throw "matrix==nullptr";
+    throw TError("matrix == nullptr", __func__, __FILE__, __LINE__);
   if (index >= n)
-    throw"index>=n";
+    throw TError("index >= n", __func__, __FILE__, __LINE__);
   return matrix[index];
 }
 
@@ -734,6 +780,7 @@ inline istream& operator>>(istream& i, TMatrix<I>& t)
   cin >> t.n;
   cout << "Enter the count of columns: ";
   cin >> t.m;
+  if (t.m<0 || t.n)
   if (t.m == 0 || t.n == 0)
     t.matrix = nullptr;
   else

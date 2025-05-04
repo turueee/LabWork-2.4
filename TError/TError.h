@@ -18,7 +18,7 @@ public:
   {
     TString er(error), func(function), fi(file),prob(" ");
     message = er + prob + func +prob + fi;
-    cout << "\nError: " << er << "Function: " << func << "File: " << fi <<"Line:"<<line<< endl;
+    //cout << "\nError: " << er << "Function: " << func << "File: " << fi <<"Line:"<<line<< endl;
   }
 };
 
