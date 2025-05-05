@@ -567,7 +567,9 @@ inline TMatrix<T> TMatrix<T>::Pow(int st)
   else if (st == 0)
   {
     TMatrix<T> a(n, n);
-    return a;
+    for (int i = 0; i < n; ++i)
+      a[i][i] == 1;
+    return TMatrix<T>(a);
   }
   else if (st > 0)
   {
