@@ -7,5 +7,7 @@ int main()
   TMatrix<double> g, f(2,3);
   TVector<double> d,h;
   cin >> d;
+  for (auto k : d)
+    std::cout << k << std::endl;
   d.Save();
 }
