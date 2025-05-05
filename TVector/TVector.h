@@ -39,7 +39,7 @@ public:
   TVector QuickSort(int left,int right);
   TVector InsertionSort();
 
-  TVector& Normalisation();
+  TVector<T> Normalisation();
   T FirstNorm();
   T SecondNorm();
   T InfinityNorm();
@@ -182,7 +182,7 @@ inline TVector<T> TVector<T>::operator+(const TVector<T>& line)
 {
   if (len != line.len)
     throw TError("len != line.len", __func__, __FILE__, __LINE__);
-  else if (len == nullptr)
+  else if (len == 0)
   {
     return TVector();
   }
@@ -200,7 +200,7 @@ inline TVector<T> TVector<T>::operator-(const TVector<T>& line)
 {
   if (len != line.len)
     throw TError("len != line.len", __func__, __FILE__, __LINE__);
-  else if (len == nullptr)
+  else if (len == 0)
   {
     return TVector();
   }
@@ -218,15 +218,15 @@ inline T TVector<T>::operator*(const TVector<T>& line)
 {
   if (len != line.len)
     throw TError("len != line.len", __func__, __FILE__, __LINE__);
-  else if (len == nullptr)
+  else if (len == 0 || line.len ==0)
   {
-    return TVector();
+    throw TError("len == 0 || line.len == 0", __func__, __FILE__, __LINE__);
   }
   else
   {
     T res = 0;
     for (int i = 0; i < len; ++i)
-      res = vector[i] * line.vector[i];
+      res += vector[i] * line.vector[i];
     return res;
   }
 }
@@ -250,6 +250,8 @@ inline TVector<T> TVector<T>::operator*(T num)
 template<class T>
 inline TVector<T> TVector<T>::operator/(T num)
 {
+  if (num==0)
+    throw TError("num == 0", __func__, __FILE__, __LINE__);
   if (vector == nullptr)
   {
     return TVector();
@@ -301,8 +303,8 @@ template<class T>
 inline bool TVector<T>::operator==(const TVector<T>& line)
 {
   if (len != line.len)
-    throw("len!=line.len");
-  else if (len == nullptr)
+    return false;
+  else if (len == 0)
   {
     return true;
   }
@@ -331,6 +333,8 @@ inline T& TVector<T>::operator[](int index) const
 template<class T>
 inline TVector<T> TVector<T>::BublleSort()
 {
+  if (len == 0)
+    throw TError("len == 0", __func__, __FILE__, __LINE__);
   T rezerv;
   TVector<T> res(*this);
   for (int i = 0; i < len; ++i)
@@ -351,6 +355,8 @@ inline TVector<T> TVector<T>::BublleSort()
 template<class T>
 inline TVector<T> TVector<T>::QuickSort(int left, int right)
 {
+  if (len == 0)
+    throw TError("len == 0", __func__, __FILE__, __LINE__);
   TVector<T> res(*this);
 
   if (left < right)
@@ -384,6 +390,8 @@ inline TVector<T> TVector<T>::QuickSort(int left, int right)
 template<class T>
 inline TVector<T> TVector<T>::InsertionSort()
 {
+  if (len == 0)
+    throw TError("len == 0", __func__, __FILE__, __LINE__);
   T key;
   TVector <T> res(*this);
   for (int i = 2; i < len; i)
@@ -401,23 +409,30 @@ inline TVector<T> TVector<T>::InsertionSort()
 }
 
 template<class T>
-inline TVector<T>& TVector<T>::Normalisation()
+inline TVector<T> TVector<T>::Normalisation()
 {
-  // TODO: вставьте здесь оператор return
+  if (len == 0)
+    throw TError("len == 0", __func__, __FILE__, __LINE__);
+  TVector<T> res(*this);
+  return TVector <T> (res / res.InfinityNorm());
 }
 
 template<class T>
 inline T TVector<T>::FirstNorm()
 {
+  if (len == 0)
+    throw TError("len == 0", __func__, __FILE__, __LINE__);
   T first_norma = 0;
   for (int i = 0; i < len; ++i)
-    first_norma += vector[counter];
+    first_norma += vector[i];
   return first_norma;
 }
 
 template<class T>
 inline T TVector<T>::SecondNorm()
 {
+  if (len == 0)
+    throw TError("len == 0", __func__, __FILE__, __LINE__);
   T second_norma = 0;
   for (int i = 0; i < len; ++i)
     second_norma += (vector[i] * vector[i]);
@@ -427,6 +442,8 @@ inline T TVector<T>::SecondNorm()
 template<class T>
 inline T TVector<T>::InfinityNorm()
 {
+  if (len == 0)
+    throw TError("len == 0", __func__, __FILE__, __LINE__);
   T maxi = vector[0];
   for (int i = 1; i < len; ++i)
   {
@@ -439,6 +456,8 @@ inline T TVector<T>::InfinityNorm()
 template<class T>
 inline T TVector<T>::HelderNorm()
 {
+  if (len == 0)
+    throw TError("len == 0", __func__, __FILE__, __LINE__);
   T sum = 0;
   for (int i = 0; i < len; ++i)
     sum += pow(vector[i], (double)len);

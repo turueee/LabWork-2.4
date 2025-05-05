@@ -446,6 +446,8 @@ inline TMatrix<T> TMatrix<T>::Inverse()
 template<class T>
 inline TVector<T> TMatrix<T>::Gauss(TVector<T>& table)
 {
+  if (matrix==nullptr || table.GetLen() == 0)
+    throw TError("matrix==nullptr || table.vector == nullptr", __func__, __FILE__, __LINE__);
   if (n != m || n != table.GetLen())
     throw TError("n != m", __func__, __FILE__, __LINE__);
   else if (this->Determinant()==0)
@@ -571,7 +573,7 @@ inline TMatrix<T> TMatrix<T>::Pow(int st)
     TMatrix<T> a(*this),res(*this);
     for (int i = 1; i < st; ++i)
       res = res * a;
-    return res;
+    return TMatrix < T>(res);
   }
   else
   {
@@ -580,7 +582,7 @@ inline TMatrix<T> TMatrix<T>::Pow(int st)
     res = a;
     for (int i = 1; i < st; ++i)
       res = res * a;
-    return res;
+    return TMatrix < T> (res);
   }
 }
 

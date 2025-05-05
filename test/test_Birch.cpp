@@ -478,3 +478,457 @@ TEST(TMatrix, throw_inverse_zero)
 }
 
 
+TEST(TMatrix, can_get_Gauss)
+{
+  TMatrix<double> s(2, 2);
+  TVector<double> z(2), r(2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 4;
+
+  z[0] = 1;
+  z[1] = 2;
+
+  r[0] = 0;
+  r[1] = 0.5;
+  EXPECT_NEAR(1, s.Gauss(z)==r, 0.000001);
+}
+
+
+TEST(TMatrix, throw_Gauss_by_nullptr)
+{
+  TMatrix<double> s;
+  TVector<double> z;
+  ASSERT_ANY_THROW(s.Gauss(z));
+}
+
+
+TEST(TMatrix, throw_Gauss_by_nonquadro)
+{
+  TMatrix<double> s(2, 5);
+  TVector<double> z(2);
+  ASSERT_ANY_THROW(s.Gauss(z));
+}
+
+
+TEST(TMatrix, throw_Gauss_by_nan)
+{
+  TMatrix<double> s(5,2);
+  TVector<double> z(10);
+  ASSERT_ANY_THROW(s.Gauss(z));
+}
+
+
+TEST(TMatrix, throw_Gauss_by_zero)
+{
+  TMatrix<double> s(2, 2);
+  TVector<double> z(2);
+  ASSERT_ANY_THROW(s.Gauss(z));
+}
+
+
+TEST(TMatrix, can_get_determinant)
+{
+  TMatrix<double> s(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 4;
+  EXPECT_NEAR(-2, s.Determinant(), 0.000001);
+}
+
+
+TEST(TMatrix, throw_determinant_by_nullptr)
+{
+  TMatrix<double> s;
+  ASSERT_ANY_THROW(s.Determinant());
+}
+
+
+TEST(TMatrix, throw_determinant_by_nonquadro)
+{
+  TMatrix<double> s(2, 5);
+  ASSERT_ANY_THROW(s.Determinant());
+}
+
+
+TEST(TMatrix, can_get_count_of_includes)
+{
+  TMatrix<double> s(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+  EXPECT_NEAR(2, s.CountOfIncludes(1), 0.000001);
+}
+
+
+TEST(TMatrix, throw_count_of_includes_by_nullptr)
+{
+  TMatrix<double> s;
+  ASSERT_ANY_THROW(s.CountOfIncludes(2));
+}
+
+
+TEST(TMatrix, can_get_pow)
+{
+  TMatrix<double> s(2, 2),u(2,2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  u[0][0] = 7;
+  u[0][1] = 4;
+  u[1][0] = 6;
+  u[1][1] = 7;
+
+  EXPECT_NEAR(1,s.Pow(2)==u, 0.000001);
+}
+
+
+TEST(TMatrix, throw_pow_by_nullptr)
+{
+  TMatrix<double> s;
+  ASSERT_ANY_THROW(s.Pow(2));
+}
+
+
+TEST(TMatrix, throw_pow_by_nonquadro)
+{
+  TMatrix<double> s(2,3);
+  ASSERT_ANY_THROW(s.Pow(2));
+}
+
+
+TEST(TVector, can_create_vector_with_positive_len)
+{
+  ASSERT_NO_THROW(TVector <double> table(3));
+}
+
+
+TEST(TVector, throw_create_vector_with_negative_len)
+{
+  ASSERT_ANY_THROW(TVector<double> table(-3));
+}
+
+
+TEST(TVector, can_get_len)
+{
+  TVector<double> s(2);
+  EXPECT_NEAR(2, s.GetLen(), 0.000001);
+}
+
+
+TEST(TVector, can_set_len)
+{
+  TVector<double> s(2);
+  s.SetLen(4);
+  EXPECT_NEAR(4, s.GetLen(), 0.000001);
+}
+
+
+TEST(TVector, throw_set_negative_len)
+{
+  TVector<double> s(2);
+  ASSERT_ANY_THROW(s.SetLen(-4));
+}
+
+
+TEST(TVector, can_add)
+{
+  TVector<double> s(2),c(2),res(2);
+
+  s[0] = 1;
+  s[1] = 2;
+
+  c[0] = 3;
+  c[1] = 4;
+
+  res[0] = 4;
+  res[1] = 6;
+
+  EXPECT_NEAR(1, res==c+s, 0.000001);
+}
+
+
+TEST(TVector, throw_add)
+{
+  TVector<double> s(2),u(3);
+  ASSERT_ANY_THROW(s+u);
+}
+
+
+TEST(TVector, can_sub)
+{
+  TVector<double> s(2), c(2), res(2);
+
+  s[0] = 1;
+  s[1] = 2;
+
+  c[0] = 3;
+  c[1] = 4;
+
+  res[0] = 2;
+  res[1] = 2;
+
+  EXPECT_NEAR(1, res == c - s, 0.000001);
+}
+
+
+TEST(TVector, throw_sub)
+{
+  TVector<double> s(2), u(3);
+  ASSERT_ANY_THROW(s - u);
+}
+
+
+TEST(TVector, can_mul)
+{
+  TVector<double> s(2), c(2), res(2);
+
+  s[0] = 1;
+  s[1] = 2;
+
+  c[0] = 3;
+  c[1] = 4;
+  EXPECT_NEAR(11, c * s, 0.000001);
+}
+
+
+TEST(TVector, throw_mul)
+{
+  TVector<double> s(2), u(3);
+  ASSERT_ANY_THROW(s * u);
+}
+
+
+TEST(TVector, can_mul_by_num)
+{
+  TVector<double> s(2), c(2);
+
+  s[0] = 1;
+  s[1] = 2;
+
+  c[0] = 2;
+  c[1] = 4;
+  EXPECT_NEAR(1, c == s*2, 0.000001);
+}
+
+
+TEST(TVector, can_devide_by_num)
+{
+  TVector<double> s(2), c(2), res(2);
+
+  s[0] = 2;
+  s[1] = 6;
+
+  c[0] = 1;
+  c[1] = 3;
+  EXPECT_NEAR(1, c == s/2, 0.000001);
+}
+
+
+TEST(TVector, throw_devide_by_zero)
+{
+  TVector<double> s(2), u(3);
+  ASSERT_ANY_THROW(s /0);
+}
+
+
+TEST(TVector, can_equipment)
+{
+  TVector<double> s(2), c(2);
+
+  s[0] = 2;
+  s[1] = 6;
+
+  c = s;
+  EXPECT_NEAR(1, c == s, 0.000001);
+}
+
+
+TEST(TVector, can_equip)
+{
+  TVector<double> s(2), c(2);
+
+  s[0] = 2;
+  s[1] = 6;
+
+  c[0] = 2;
+  c[1] = 6;
+  EXPECT_NEAR(1, c == s, 0.000001);
+}
+
+
+TEST(TVector, can_get_by_index)
+{
+  TVector<double> s(2);
+
+  s[0] = 2;
+  s[1] = 6;
+  EXPECT_NEAR(6, s[1], 0.000001);
+}
+
+
+TEST(TVector, throw_more_index)
+{
+  TVector<double> s(2);
+  ASSERT_ANY_THROW(s[2]);
+}
+
+
+TEST(TVector, throw_index_by_nullptr)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s[2]);
+}
+
+
+TEST(TVector, can_bubblesort)
+{
+  TVector<double> s(2),c(2);
+
+  s[0] = 6;
+  s[1] = 2;
+
+  c[0] = 2;
+  c[1] = 6;
+  EXPECT_NEAR(1, s.BublleSort()==c, 0.000001);
+}
+
+
+TEST(TVector, throw_bubblesort)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s.BublleSort());
+}
+
+
+TEST(TVector, can_quicksort)
+{
+  TVector<double> s(2), c(2);
+
+  s[0] = 6;
+  s[1] = 2;
+
+  c[0] = 2;
+  c[1] = 6;
+  EXPECT_NEAR(1, s.QuickSort(0,1) == c, 0.000001);
+}
+
+
+TEST(TVector, throw_quicksort)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s.QuickSort(0,34));
+}
+
+
+TEST(TVector, can_insertsort)
+{
+  TVector<double> s(2), c(2);
+
+  s[0] = 6;
+  s[1] = 2;
+
+  c[0] = 2;
+  c[1] = 6;
+  EXPECT_NEAR(0, s.InsertionSort() == c, 0.000001);
+}
+
+
+TEST(TVector, throw_insertsort)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s.InsertionSort());
+}
+
+
+TEST(TVector, can_firstnorm)
+{
+  TVector<double> s(2);
+
+  s[0] = 6;
+  s[1] = 2;
+  EXPECT_NEAR(8, s.FirstNorm(),0.000001);
+}
+
+
+TEST(TVector, throw_firstnorm)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s.FirstNorm());
+}
+
+
+TEST(TVector, can_secondnorm)
+{
+  TVector<double> s(2);
+
+  s[0] = 4;
+  s[1] = 3;
+  EXPECT_NEAR(5, s.SecondNorm(), 0.000001);
+}
+
+
+TEST(TVector, throw_secondnorm)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s.FirstNorm());
+}
+
+
+TEST(TVector, can_infinitynorm)
+{
+  TVector<double> s(2);
+
+  s[0] = 4;
+  s[1] = 3;
+  EXPECT_NEAR(4, s.InfinityNorm(), 0.000001);
+}
+
+
+TEST(TVector, throw_infinitynorm)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s.InfinityNorm());
+}
+
+
+TEST(TVector, can_heldernorm)
+{
+  TVector<double> s(2);
+
+  s[0] = 4;
+  s[1] = 3;
+  EXPECT_NEAR(5, s.HelderNorm(), 0.000001);
+}
+
+
+TEST(TVector, throw_heldernorm)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s.HelderNorm());
+}
+
+
+TEST(TVector, can_normalisation)
+{
+  TVector<double> s(2),c(2);
+
+  s[0] = 4;
+  s[1] = 2;
+
+  c[0] = 1;
+  c[1] = 0.5;
+  EXPECT_NEAR(1, s.Normalisation()==c, 0.000001);
+}
+
+
+TEST(TVector, throw_normalisation)
+{
+  TVector<double> s;
+  ASSERT_ANY_THROW(s.Normalisation());
+}
