@@ -45,6 +45,8 @@ public:
   T InfinityNorm();
   T HelderNorm();
 
+  void Save();
+
 
   template <class O>
   friend ostream& operator<<(ostream& o, TVector<O>& t);
@@ -462,6 +464,30 @@ inline T TVector<T>::HelderNorm()
   for (int i = 0; i < len; ++i)
     sum += pow(vector[i], (double)len);
   return pow(sum, 1 / (double)len);
+}
+
+
+template<class T>
+inline void TVector<T>::Save()
+{
+  FILE* file_of_numbers;
+  file_of_numbers = fopen("result_massive.txt", "w");
+  if (file_of_numbers != NULL)
+  {
+    fprintf(file_of_numbers, "Vector(%d):\n", len);
+  }
+  else
+    printf("FILE ERROR!!!");
+  for (int i = 0; i < len; ++i)
+  {
+      if (file_of_numbers != NULL)
+      {
+        fprintf(file_of_numbers, "%lf\t", vector[i]);
+      }
+      else
+        printf("FILE ERROR!!!");
+  }
+  fclose(file_of_numbers);
 }
 
 template<class O>

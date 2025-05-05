@@ -49,6 +49,7 @@ public:
   TMatrix operator/(T num);
   void operator=(const TMatrix<T>& table);
   bool operator==(const TMatrix<T>& table);
+  void Save();
   T*& operator[](int index);
 
   template <class O>
@@ -737,6 +738,38 @@ inline bool TMatrix<T>::operator==(const TMatrix& table)
     }
     return true;
   }
+}
+
+template<class T>
+inline void TMatrix<T>::Save()
+{
+  FILE* file_of_numbers;
+  file_of_numbers = fopen("result_massive.txt", "w");
+  if (file_of_numbers != NULL)
+  {
+    fprintf(file_of_numbers, "Matrix %d*%d:\n",n,m);
+  }
+  else
+    printf("FILE ERROR!!!");
+  for (int i = 0; i < n; ++i)
+  {
+    for (int j = 0; j < m; ++j)
+    {
+      if (file_of_numbers != NULL)
+      {
+        fprintf(file_of_numbers, "%lf\t", matrix[i][j]);
+      }
+      else
+        printf("FILE ERROR!!!");
+    }
+    if (file_of_numbers != NULL)
+    {
+      fprintf(file_of_numbers, "\n");
+    }
+    else
+      printf("FILE ERROR!!!");
+  }
+  fclose(file_of_numbers);
 }
 
 

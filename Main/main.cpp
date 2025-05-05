@@ -6,6 +6,6 @@ int main()
   system("chcp 1251> nul");
   TMatrix<double> g, f(2,3);
   TVector<double> d,h;
-  cin >> h;
-  cout << h.InsertionSort();
+  cin >> d;
+  d.Save();
 }
