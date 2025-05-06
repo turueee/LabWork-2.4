@@ -45,9 +45,11 @@ public:
   TMatrix operator+(const TMatrix<T>& table);
   TMatrix operator-(const TMatrix<T>& table);
   TMatrix operator*(const TMatrix<T>& table);
+  TMatrix operator/(const TMatrix<T>& table);
   TMatrix operator*(T num);
   TMatrix operator/(T num);
   void operator=(const TMatrix<T>& table);
+  void operator=(TMatrix<T>&& table);
   bool operator==(const TMatrix<T>& table);
   void Save();
   T*& operator[](int index);
@@ -437,8 +439,34 @@ inline TMatrix<T> TMatrix<T>::Inverse()
   }
   else if (n>=2)
   {
-    TMatrix<T> cp = this->Attached();
-    return TMatrix<T>(cp.Transposition() / this->Determinant());
+    TMatrix<T> t(*this),e(t.GetN(),t.GetN());
+    for (int i = 0; i < n; ++i)
+      e[i][i] = 1;
+
+    for (int i = 0; i < n; ++i)
+    {
+      for (int j = 0; j < n; ++j)
+      {
+        if (i != j)
+        {
+          T mul = t.matrix[j][i];
+          for (int k = 0; k < n; ++k)
+          {
+            if (t.matrix[j][k] != 0)
+            {
+              e.matrix[j][k] = e.matrix[j][k] * t.matrix[i][i] - e.matrix[i][k] * mul;
+              t.matrix[j][k] = t.matrix[j][k] * t.matrix[i][i] - t.matrix[i][k] * mul;
+            }
+          }
+        }
+      }
+    }
+    for (int i = 0; i < n; ++i)
+    {
+      for (int j = 0; j < n; ++j)
+        e.matrix[i][j] /= t.matrix[i][i];
+    }
+    return TMatrix<T>(e);
   }
 }
 
@@ -655,6 +683,13 @@ inline TMatrix<T> TMatrix<T>::operator*(const TMatrix& table)
   }
 }
 
+template<class T>
+inline TMatrix<T> TMatrix<T>::operator/(const TMatrix<T>& table)
+{
+  TMatrix<T> r(table), l(*this);
+  return TMatrix<T>(l*r.Inverse());
+}
+
 
 template<class T>
 inline TMatrix<T> TMatrix<T>::operator*(T num)
@@ -694,6 +729,9 @@ inline TMatrix<T> TMatrix<T>::operator/(T num)
 template<class T>
 inline void TMatrix<T>::operator=(const TMatrix<T>& table)
 {
+  if (this == &table)
+    return;
+
   if (table.m == 0)
   {
     matrix = nullptr;
@@ -712,6 +750,27 @@ inline void TMatrix<T>::operator=(const TMatrix<T>& table)
         matrix[i][j] = table.matrix[i][j];
     }
   }
+}
+
+template<class T>
+inline void TMatrix<T>::operator=(TMatrix<T>&& table)
+{
+  if (this == &table)
+    return;
+
+  if (matrix != nullptr)
+  {
+    for (int i = 0; i < n; ++i)
+      delete[]matrix[i];
+    delete[] matrix;
+  }
+
+  matrix = table.matrix;
+  n = table.n;
+  m = table.m;
+  table.matrix = nullptr;
+  table.m = 0;
+  table.n = 0;
 }
 
 

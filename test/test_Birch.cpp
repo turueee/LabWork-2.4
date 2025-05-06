@@ -194,6 +194,27 @@ TEST(TMatrix, can_mul_by_matrix)
 }
 
 
+TEST(TMatrix, can_div_by_matrix)
+{
+  TMatrix<double> s(2, 2), u(2, 2), add(2, 2);
+  s[0][0] = 1;
+  s[0][1] = 2;
+  s[1][0] = 3;
+  s[1][1] = 1;
+
+  u[0][0] = 5;
+  u[0][1] = 6;
+  u[1][0] = 2;
+  u[1][1] = 4;
+
+  add[0][0] = 0;
+  add[0][1] = 0.5;
+  add[1][0] = 1.25;
+  add[1][1] = -1.625;
+  EXPECT_NEAR(1, s / u == add, 0.000001);
+}
+
+
 TEST(TMatrix, throw_mul_by_matrix_first_matrix_is_nullptr)
 {
   TMatrix<int> s, u(2, 2);
