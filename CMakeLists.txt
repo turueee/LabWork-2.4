@@ -4,7 +4,7 @@ set(PROJECT_NAME BLAS) #Создаем обычную локальную пер�
 project(${PROJECT_NAME}) # Название проекта
 
 
-set(application StringApplication) #Переменная с именем приложения
+set(application BLASAPP) #Переменная с именем приложения
 
 set(errorlib TErrorLibrary)
 set(matrixlib TMatrixLibrary)

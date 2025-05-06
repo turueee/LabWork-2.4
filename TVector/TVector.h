@@ -5,6 +5,9 @@
 
 using namespace std;
 
+template <class T>
+class TVectorIterator;
+
 template<class T>
 class TVector {
 protected:
@@ -72,7 +75,6 @@ public:
 
   bool operator != (const TVectorIterator<T>& p);
 };
-
 
 template<class T>
 inline TVector<T>::TVector()
@@ -510,12 +512,12 @@ inline void TVector<T>::Save()
   fclose(file_of_numbers);
 }
 
+
 template<class T>
 inline TVectorIterator<T> TVector<T>::begin()
 {
   return TVectorIterator<T>(*this, 0);
 }
-
 
 template<class T>
 inline TVectorIterator<T> TVector<T>::end()
@@ -570,7 +572,6 @@ inline TVectorIterator<T>::TVectorIterator(TVector<T>& vector, int index_) :
   p(vector), index(index_)
 {
 }
-
 
 template<class T>
 inline T& TVectorIterator<T>::operator*()

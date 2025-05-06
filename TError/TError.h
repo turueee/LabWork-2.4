@@ -8,18 +8,27 @@
 class TError
 {
 protected:
-  TString message;
-
+  TString err;
+  TString func;
+  TString fil;
+  int lin;
 public:
   TError(char* error,
     char* function,
     char* file,
     int line)
   {
-    TString er(error), func(function), fi(file),prob(" ");
-    message = er + prob + func +prob + fi;
+    err.SetStr(error);
+    func.SetStr(function);
+    fil.SetStr(file);
+    lin = line;
     //cout << "\nError: " << er << "Function: " << func << "File: " << fi <<"Line:"<<line<< endl;
+  }
+
+  void what()
+  {
+    cout << "\nError: " << err << "Function: " << func << "File: " << fil << "Line:" << lin << endl;
   }
 };
 
-#define THROW_ERROR(err, ...) throw TError(err, __func__, __FILE__, __LINE__)
+#define THROW_ERROR(err,...) throw TError(err, __func__, __FILE__, __LINE__)

@@ -122,9 +122,7 @@ inline TMatrix<T>::TMatrix(TMatrix&& table)
   matrix = table.matrix;
   table.n = 0; 
   table.m = 0;
-  for (int i = 0; i < n; ++i)
-    matrix[i] = nullptr;
-  matrix = nullptr;
+  table.matrix = nullptr;
 }
 
 
