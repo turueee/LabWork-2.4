@@ -474,6 +474,7 @@ TEST(TMatrix, can_get_inverse)
   u[0][1] = 1;
   u[1][0] = 1.5;
   u[1][1] = -0.5;
+
   EXPECT_NEAR(1, s.Inverse() == u, 0.000001);
 }
 
